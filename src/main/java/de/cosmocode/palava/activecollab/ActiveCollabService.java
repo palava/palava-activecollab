@@ -106,7 +106,12 @@ final class ActiveCollabService implements ActiveCollab {
     }
 
     @Override
-    public ActiveCollabIssue updateIssue(Issue issue) throws IssueTrackerException {
+    public Issue getIssue(String issueId) throws IssueTrackerException {
+        return ac.getIssue(issueId);
+    }
+
+    @Override
+    public ActiveCollabIssue updateIssue(ActiveCollabIssue issue) throws IssueTrackerException {
         return ac.updateIssue(issue);
     }
 
