@@ -90,6 +90,8 @@ public final class ActiveCollabModule implements Module {
 
         @Override
         protected void optionals() {
+            bind(int.class).annotatedWith(Names.named(ActiveCollabConfig.VISIBILITY)).to(
+                Key.get(int.class, Names.named(config.prefixed(ActiveCollabConfig.VISIBILITY))));
             bind(int.class).annotatedWith(Names.named(ActiveCollabConfig.MILESTONEID)).to(
                 Key.get(int.class, Names.named(config.prefixed(ActiveCollabConfig.MILESTONEID))));
             bind(int.class).annotatedWith(Names.named(ActiveCollabConfig.PARENTID)).to(

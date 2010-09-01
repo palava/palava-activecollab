@@ -57,6 +57,22 @@ final class ActiveCollabService implements ActiveCollab {
         return ac.getProjectId();
     }
 
+    @Inject(optional = true)
+    public void configureVisibility(@Named(ActiveCollabConfig.VISIBILITY) int visibility) {
+        setVisibility(visibility);
+        LOG.info("{} visibility set to {}", ac, visibility);
+    }
+
+    @Override
+    public int getVisibility() {
+        return ac.getVisibility();
+    }
+
+    @Override
+    public void setVisibility(int visibility) {
+        ac.setVisibility(visibility);
+    }
+
     @Override
     public int getMilestoneId() {
         return ac.getMilestoneId();

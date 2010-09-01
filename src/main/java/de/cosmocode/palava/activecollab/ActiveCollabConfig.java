@@ -27,6 +27,7 @@ public final class ActiveCollabConfig {
     public static final String TOKEN = PREFIX + "token";
     public static final String PROJECTID = PREFIX + "projectId";
 
+    public static final String VISIBILITY = PREFIX + "visibility";
     public static final String MILESTONEID = PREFIX + "milestoneId";
     public static final String PARENTID = PREFIX + "parentId";
 
