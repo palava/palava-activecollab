@@ -12,10 +12,10 @@
 
     <groupId>de.cosmocode.palava</groupId>
     <artifactId>palava-activecollab</artifactId>
-    <version>0.2.0</version>
+    <version>0.3-SNAPSHOT</version>
 
     <scm>
-        <developerConnection>scm:svn:https://palava.svn.cosmocode.de/palava-activecollab/tags/0.2.0</developerConnection>
+        <developerConnection>scm:svn:https://palava.svn.cosmocode.de/palava-activecollab/trunk</developerConnection>
     </scm>
 
     <dependencies>
