@@ -16,13 +16,22 @@
 
 package de.cosmocode.palava.activecollab;
 
+import com.google.common.base.Preconditions;
 import com.google.inject.Binder;
+import com.google.inject.Key;
 import com.google.inject.Module;
+import com.google.inject.Singleton;
+import com.google.inject.name.Names;
 import de.cosmocode.issuetracker.IssueTracker;
+import de.cosmocode.issuetracker.activecollab.ActiveCollab;
+import de.cosmocode.palava.core.inject.AbstractRebindModule;
+import de.cosmocode.palava.core.inject.Config;
+import de.cosmocode.palava.core.inject.RebindModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Annotation;
+import java.net.URI;
 
 /**
  * Installs an {@link de.cosmocode.issuetracker.IssueTracker} service to
@@ -33,22 +42,137 @@ import java.lang.annotation.Annotation;
 public final class ActiveCollabModule implements Module {
     private static final Logger LOG = LoggerFactory.getLogger(ActiveCollabModule.class);
 
-    private final Class<? extends Annotation> annotation;
-    private final String connectionName;
-
-    ActiveCollabModule(Class<? extends Annotation> annotation, String connectionName) {
-        this.annotation = annotation;
-        this.connectionName = connectionName;
-    }
-
-    public static ActiveCollabModule connectActiveCollab(
-            Class<? extends Annotation> annotation,
-            String connectionName) {
-        return new ActiveCollabModule(annotation, connectionName);
+    private ActiveCollabModule() {
     }
 
     @Override
     public void configure(Binder binder) {
-        // bind to @annotation IssueTracker
+        binder.bind(IssueTracker.class).to(ActiveCollabService.class).in(Singleton.class);
+        binder.bind(ActiveCollab.class).to(ActiveCollabService.class).in(Singleton.class);
     }
+
+    /**
+     * Rebinds all configuration entries using the specified prefix for configuration
+     * keys and the supplied annoation for key rebindings.
+     *
+     * @param annotation the new binding annotation
+     * @param prefix the prefix
+     * @return a module which rebinds all required settings
+     */
+    public static RebindModule annotatedWith(Annotation annotation, String prefix) {
+        Preconditions.checkNotNull(annotation, "Annotation");
+        Preconditions.checkNotNull(prefix, "Prefix");
+        return new AnnotatedInstanceModule(annotation, prefix);
+    }
+
+    /**
+     * A {@link RebindModule} which uses a name to rebind using {@link Names}.
+     *
+     * @author Willi Schoenborn
+     */
+    private static final class AnnotatedInstanceModule extends AbstractRebindModule {
+
+        private final Annotation key;
+        private final Config config;
+
+        private AnnotatedInstanceModule(Annotation annotation, String prefix) {
+            this.key = annotation;
+            this.config = new Config(prefix);
+        }
+
+        @Override
+        protected void configuration() {
+            bind(URI.class).annotatedWith(Names.named(ActiveCollabConfig.URI)).to(
+                    Key.get(URI.class, Names.named(config.prefixed(ActiveCollabConfig.URI))));
+            bind(String.class).annotatedWith(Names.named(ActiveCollabConfig.USER)).to(
+                    Key.get(String.class, Names.named(config.prefixed(ActiveCollabConfig.USER))));
+            bind(String.class).annotatedWith(Names.named(ActiveCollabConfig.APIKEY)).to(
+                    Key.get(String.class, Names.named(config.prefixed(ActiveCollabConfig.APIKEY))));
+            bind(int.class).annotatedWith(Names.named(ActiveCollabConfig.PROJECTID)).to(
+                    Key.get(int.class, Names.named(config.prefixed(ActiveCollabConfig.PROJECTID))));
+        }
+
+        @Override
+        protected void optionals() {
+            bind(int.class).annotatedWith(Names.named(ActiveCollabConfig.MILESTONEID)).to(
+                Key.get(int.class, Names.named(config.prefixed(ActiveCollabConfig.MILESTONEID))));
+            bind(int.class).annotatedWith(Names.named(ActiveCollabConfig.PARENTID)).to(
+                Key.get(int.class, Names.named(config.prefixed(ActiveCollabConfig.PARENTID))));
+        }
+
+        @Override
+        protected void bindings() {
+            bind(IssueTracker.class).annotatedWith(key).to(ActiveCollabService.class).in(Singleton.class);
+            bind(ActiveCollab.class).annotatedWith(key).to(ActiveCollabService.class).in(Singleton.class);
+        }
+
+        @Override
+        protected void expose() {
+            expose(IssueTracker.class).annotatedWith(key);
+            expose(ActiveCollab.class).annotatedWith(key);
+        }
+
+    }
+
+    /**
+     * Rebinds all configuration entries using the specified name as prefix for configuration
+     * keys and the supplied annoation for key rebindings.
+     *
+     * @param annotationType the new binding annotation
+     * @param prefix the prefix
+     * @return a module which rebinds all required settings
+     */
+    public static RebindModule annotatedWith(Class<? extends Annotation> annotationType, String prefix) {
+        Preconditions.checkNotNull(annotationType, "AnnotationType");
+        Preconditions.checkNotNull(prefix, "Prefix");
+        return new AnnotatedModule(annotationType, prefix);
+    }
+
+    /**
+     * A {@link RebindModule} which uses {@link Key#get(java.lang.reflect.Type, Annotation)} to rebind.
+     */
+    private static final class AnnotatedModule extends AbstractRebindModule {
+
+        private final Class<? extends Annotation> key;
+        private final Config config;
+
+        private AnnotatedModule(Class<? extends Annotation> key, String prefix) {
+            this.key = key;
+            this.config = new Config(prefix);
+        }
+
+        @Override
+        protected void configuration() {
+            bind(URI.class).annotatedWith(Names.named(ActiveCollabConfig.URI)).to(
+                    Key.get(URI.class, Names.named(config.prefixed(ActiveCollabConfig.URI))));
+            bind(String.class).annotatedWith(Names.named(ActiveCollabConfig.USER)).to(
+                    Key.get(String.class, Names.named(config.prefixed(ActiveCollabConfig.USER))));
+            bind(String.class).annotatedWith(Names.named(ActiveCollabConfig.APIKEY)).to(
+                    Key.get(String.class, Names.named(config.prefixed(ActiveCollabConfig.APIKEY))));
+            bind(int.class).annotatedWith(Names.named(ActiveCollabConfig.PROJECTID)).to(
+                    Key.get(int.class, Names.named(config.prefixed(ActiveCollabConfig.PROJECTID))));
+        }
+
+        @Override
+        protected void optionals() {
+            bind(int.class).annotatedWith(Names.named(ActiveCollabConfig.MILESTONEID)).to(
+                Key.get(int.class, Names.named(config.prefixed(ActiveCollabConfig.MILESTONEID))));
+            bind(int.class).annotatedWith(Names.named(ActiveCollabConfig.PARENTID)).to(
+                Key.get(int.class, Names.named(config.prefixed(ActiveCollabConfig.PARENTID))));
+        }
+
+        @Override
+        protected void bindings() {
+            bind(IssueTracker.class).annotatedWith(key).to(ActiveCollabService.class).in(Singleton.class);
+            bind(ActiveCollab.class).annotatedWith(key).to(ActiveCollabService.class).in(Singleton.class);
+        }
+
+        @Override
+        protected void expose() {
+            expose(IssueTracker.class).annotatedWith(key);
+            expose(ActiveCollab.class).annotatedWith(key);
+        }
+
+    }
+
 }
