@@ -23,11 +23,11 @@ import de.cosmocode.issuetracker.Issue;
 import de.cosmocode.issuetracker.IssueTrackerException;
 import de.cosmocode.issuetracker.activecollab.ActiveCollab;
 import de.cosmocode.issuetracker.activecollab.ActiveCollabConnector;
+import de.cosmocode.issuetracker.activecollab.ActiveCollabIssue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
-import java.util.List;
 
 /**
  * @author Tobias Sarnowski
@@ -40,22 +40,16 @@ final class ActiveCollabService implements ActiveCollab {
     @Inject
     ActiveCollabService(
             @Named(ActiveCollabConfig.URI) URI uri,
-            @Named(ActiveCollabConfig.USER) String user,
-            @Named(ActiveCollabConfig.APIKEY) String apikey,
+            @Named(ActiveCollabConfig.TOKEN) String token,
             @Named(ActiveCollabConfig.PROJECTID) int projectId) {
 
-        ac = ActiveCollabConnector.connectActiveCollab(uri, user, apikey, projectId);
+        ac = ActiveCollabConnector.connectActiveCollab(uri, token, projectId);
         LOG.info("Configured {}", ac);
     }
 
     @Override
     public URI getUri() {
         return ac.getUri();
-    }
-
-    @Override
-    public String getUser() {
-        return ac.getUser();
     }
 
     @Override
@@ -96,22 +90,30 @@ final class ActiveCollabService implements ActiveCollab {
     }
 
     @Override
-    public Issue createIssue(String title, String description) throws IssueTrackerException {
+    public ActiveCollabIssue createIssue(String title, String description) throws IssueTrackerException {
         return ac.createIssue(title, description);
     }
 
     @Override
-    public Issue createIssue(String title, String description, Predicate<Issue> duplicationCheck) throws IssueTrackerException {
+    public ActiveCollabIssue createIssue(String title, String description, Predicate<? super Issue> duplicationCheck)
+            throws IssueTrackerException {
         return ac.createIssue(title, description, duplicationCheck);
     }
 
     @Override
-    public List<Issue> listIssues() throws IssueTrackerException {
+    public Iterable<ActiveCollabIssue> listIssues() throws IssueTrackerException {
         return ac.listIssues();
     }
 
     @Override
-    public void updateIssue(Issue issue) throws IssueTrackerException {
-        ac.updateIssue(issue);
+    public ActiveCollabIssue updateIssue(Issue issue) throws IssueTrackerException {
+        return ac.updateIssue(issue);
+    }
+
+    @Override
+    public String toString() {
+        return "ActiveCollabService{" +
+                "ac=" + ac +
+                '}';
     }
 }

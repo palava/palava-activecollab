@@ -52,69 +52,6 @@ public final class ActiveCollabModule implements Module {
     }
 
     /**
-     * Rebinds all configuration entries using the specified prefix for configuration
-     * keys and the supplied annoation for key rebindings.
-     *
-     * @param annotation the new binding annotation
-     * @param prefix the prefix
-     * @return a module which rebinds all required settings
-     */
-    public static RebindModule annotatedWith(Annotation annotation, String prefix) {
-        Preconditions.checkNotNull(annotation, "Annotation");
-        Preconditions.checkNotNull(prefix, "Prefix");
-        return new AnnotatedInstanceModule(annotation, prefix);
-    }
-
-    /**
-     * A {@link RebindModule} which uses a name to rebind using {@link Names}.
-     *
-     * @author Willi Schoenborn
-     */
-    private static final class AnnotatedInstanceModule extends AbstractRebindModule {
-
-        private final Annotation key;
-        private final Config config;
-
-        private AnnotatedInstanceModule(Annotation annotation, String prefix) {
-            this.key = annotation;
-            this.config = new Config(prefix);
-        }
-
-        @Override
-        protected void configuration() {
-            bind(URI.class).annotatedWith(Names.named(ActiveCollabConfig.URI)).to(
-                    Key.get(URI.class, Names.named(config.prefixed(ActiveCollabConfig.URI))));
-            bind(String.class).annotatedWith(Names.named(ActiveCollabConfig.USER)).to(
-                    Key.get(String.class, Names.named(config.prefixed(ActiveCollabConfig.USER))));
-            bind(String.class).annotatedWith(Names.named(ActiveCollabConfig.APIKEY)).to(
-                    Key.get(String.class, Names.named(config.prefixed(ActiveCollabConfig.APIKEY))));
-            bind(int.class).annotatedWith(Names.named(ActiveCollabConfig.PROJECTID)).to(
-                    Key.get(int.class, Names.named(config.prefixed(ActiveCollabConfig.PROJECTID))));
-        }
-
-        @Override
-        protected void optionals() {
-            bind(int.class).annotatedWith(Names.named(ActiveCollabConfig.MILESTONEID)).to(
-                Key.get(int.class, Names.named(config.prefixed(ActiveCollabConfig.MILESTONEID))));
-            bind(int.class).annotatedWith(Names.named(ActiveCollabConfig.PARENTID)).to(
-                Key.get(int.class, Names.named(config.prefixed(ActiveCollabConfig.PARENTID))));
-        }
-
-        @Override
-        protected void bindings() {
-            bind(IssueTracker.class).annotatedWith(key).to(ActiveCollabService.class).in(Singleton.class);
-            bind(ActiveCollab.class).annotatedWith(key).to(ActiveCollabService.class).in(Singleton.class);
-        }
-
-        @Override
-        protected void expose() {
-            expose(IssueTracker.class).annotatedWith(key);
-            expose(ActiveCollab.class).annotatedWith(key);
-        }
-
-    }
-
-    /**
      * Rebinds all configuration entries using the specified name as prefix for configuration
      * keys and the supplied annoation for key rebindings.
      *
@@ -145,10 +82,8 @@ public final class ActiveCollabModule implements Module {
         protected void configuration() {
             bind(URI.class).annotatedWith(Names.named(ActiveCollabConfig.URI)).to(
                     Key.get(URI.class, Names.named(config.prefixed(ActiveCollabConfig.URI))));
-            bind(String.class).annotatedWith(Names.named(ActiveCollabConfig.USER)).to(
-                    Key.get(String.class, Names.named(config.prefixed(ActiveCollabConfig.USER))));
-            bind(String.class).annotatedWith(Names.named(ActiveCollabConfig.APIKEY)).to(
-                    Key.get(String.class, Names.named(config.prefixed(ActiveCollabConfig.APIKEY))));
+            bind(String.class).annotatedWith(Names.named(ActiveCollabConfig.TOKEN)).to(
+                    Key.get(String.class, Names.named(config.prefixed(ActiveCollabConfig.TOKEN))));
             bind(int.class).annotatedWith(Names.named(ActiveCollabConfig.PROJECTID)).to(
                     Key.get(int.class, Names.named(config.prefixed(ActiveCollabConfig.PROJECTID))));
         }
@@ -163,6 +98,7 @@ public final class ActiveCollabModule implements Module {
 
         @Override
         protected void bindings() {
+            bind(ActiveCollabService.class).in(Singleton.class);
             bind(IssueTracker.class).annotatedWith(key).to(ActiveCollabService.class).in(Singleton.class);
             bind(ActiveCollab.class).annotatedWith(key).to(ActiveCollabService.class).in(Singleton.class);
         }

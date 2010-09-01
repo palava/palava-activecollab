@@ -24,8 +24,7 @@ public final class ActiveCollabConfig {
     public static final String PREFIX = "activeCollab.";
 
     public static final String URI = PREFIX + "uri";
-    public static final String USER = PREFIX + "user";
-    public static final String APIKEY = PREFIX + "apiKey";
+    public static final String TOKEN = PREFIX + "token";
     public static final String PROJECTID = PREFIX + "projectId";
 
     public static final String MILESTONEID = PREFIX + "milestoneId";
