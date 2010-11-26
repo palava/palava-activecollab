@@ -16,22 +16,24 @@
 
 package de.cosmocode.palava.activecollab;
 
+import java.lang.annotation.Annotation;
+import java.net.URI;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.base.Preconditions;
 import com.google.inject.Binder;
 import com.google.inject.Key;
 import com.google.inject.Module;
 import com.google.inject.Singleton;
 import com.google.inject.name.Names;
+
 import de.cosmocode.issuetracker.IssueTracker;
 import de.cosmocode.issuetracker.activecollab.ActiveCollab;
 import de.cosmocode.palava.core.inject.AbstractRebindModule;
 import de.cosmocode.palava.core.inject.Config;
 import de.cosmocode.palava.core.inject.RebindModule;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.lang.annotation.Annotation;
-import java.net.URI;
 
 /**
  * Installs an {@link de.cosmocode.issuetracker.IssueTracker} service to
@@ -40,9 +42,9 @@ import java.net.URI;
  * @author Tobias Sarnowski
  */
 public final class ActiveCollabModule implements Module {
-    private static final Logger LOG = LoggerFactory.getLogger(ActiveCollabModule.class);
 
     private ActiveCollabModule() {
+        
     }
 
     @Override

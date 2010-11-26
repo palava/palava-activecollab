@@ -16,26 +16,31 @@
 
 package de.cosmocode.palava.activecollab;
 
+import java.net.URI;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.base.Predicate;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+
 import de.cosmocode.issuetracker.Issue;
 import de.cosmocode.issuetracker.IssueTrackerException;
 import de.cosmocode.issuetracker.activecollab.ActiveCollab;
 import de.cosmocode.issuetracker.activecollab.ActiveCollabConnector;
 import de.cosmocode.issuetracker.activecollab.ActiveCollabIssue;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.net.URI;
 
 /**
+ * {@link Inject Injectable} {@link ActiveCollab}.
+ * 
  * @author Tobias Sarnowski
  */
 final class ActiveCollabService implements ActiveCollab {
+    
     private static final Logger LOG = LoggerFactory.getLogger(ActiveCollabService.class);
 
-    private final ActiveCollab ac;
+    private final ActiveCollab activeCollab;
 
     @Inject
     ActiveCollabService(
@@ -43,98 +48,85 @@ final class ActiveCollabService implements ActiveCollab {
             @Named(ActiveCollabConfig.TOKEN) String token,
             @Named(ActiveCollabConfig.PROJECTID) int projectId) {
 
-        ac = ActiveCollabConnector.connectActiveCollab(uri, token, projectId);
-        LOG.info("Configured {}", ac);
+        this.activeCollab = ActiveCollabConnector.connectActiveCollab(uri, token, projectId);
+        LOG.info("Configured {}", activeCollab);
     }
 
     @Override
     public URI getUri() {
-        return ac.getUri();
+        return activeCollab.getUri();
     }
 
     @Override
     public int getProjectId() {
-        return ac.getProjectId();
-    }
-
-    @Inject(optional = true)
-    public void configureVisibility(@Named(ActiveCollabConfig.VISIBILITY) int visibility) {
-        setVisibility(visibility);
-        LOG.info("{} visibility set to {}", ac, visibility);
+        return activeCollab.getProjectId();
     }
 
     @Override
     public int getVisibility() {
-        return ac.getVisibility();
+        return activeCollab.getVisibility();
     }
 
     @Override
-    public void setVisibility(int visibility) {
-        ac.setVisibility(visibility);
+    @Inject(optional = true)
+    public void setVisibility(@Named(ActiveCollabConfig.VISIBILITY) int visibility) {
+        activeCollab.setVisibility(visibility);
+        LOG.info("{} visibility set to {}", activeCollab, visibility);
     }
 
     @Override
     public int getMilestoneId() {
-        return ac.getMilestoneId();
-    }
-
-    @Inject(optional = true)
-    public void configureMilestoneId(@Named(ActiveCollabConfig.MILESTONEID) int milestoneId) {
-        setMilestoneId(milestoneId);
-        LOG.info("{} milestoneId set to {}", ac, milestoneId);
+        return activeCollab.getMilestoneId();
     }
 
     @Override
-    public void setMilestoneId(int milestoneId) {
-        ac.setMilestoneId(milestoneId);
+    @Inject(optional = true)
+    public void setMilestoneId(@Named(ActiveCollabConfig.MILESTONEID)  int milestoneId) {
+        activeCollab.setMilestoneId(milestoneId);
+        LOG.info("{} milestoneId set to {}", activeCollab, milestoneId);
     }
 
     @Override
     public int getParentId() {
-        return ac.getParentId();
-    }
-
-    @Inject(optional = true)
-    public void configureParentId(@Named(ActiveCollabConfig.PARENTID) int parentId) {
-        setParentId(parentId);
-        LOG.info("{} parentId set to {}", ac, parentId);
+        return activeCollab.getParentId();
     }
 
     @Override
-    public void setParentId(int parentId) {
-        ac.setParentId(parentId);
+    @Inject(optional = true)
+    public void setParentId(@Named(ActiveCollabConfig.PARENTID) int parentId) {
+        activeCollab.setParentId(parentId);
+        LOG.info("{} parentId set to {}", activeCollab, parentId);
     }
 
     @Override
     public ActiveCollabIssue createIssue(String title, String description) throws IssueTrackerException {
-        return ac.createIssue(title, description);
+        return activeCollab.createIssue(title, description);
     }
 
     @Override
     public ActiveCollabIssue createIssue(String title, String description, Predicate<? super Issue> duplicationCheck)
-            throws IssueTrackerException {
-        return ac.createIssue(title, description, duplicationCheck);
+        throws IssueTrackerException {
+        return activeCollab.createIssue(title, description, duplicationCheck);
     }
 
     @Override
     public Iterable<ActiveCollabIssue> listIssues() throws IssueTrackerException {
-        return ac.listIssues();
+        return activeCollab.listIssues();
     }
 
     @Override
     public Issue getIssue(String issueId) throws IssueTrackerException {
-        return ac.getIssue(issueId);
+        return activeCollab.getIssue(issueId);
     }
 
     @Override
     public ActiveCollabIssue updateIssue(ActiveCollabIssue issue) throws IssueTrackerException {
-        return ac.updateIssue(issue);
+        return activeCollab.updateIssue(issue);
     }
 
     @Override
     public String toString() {
-        return "ActiveCollabService{" +
-                "ac=" + ac +
-                '}';
+        return "ActiveCollabService [ac=" + activeCollab + "]";
     }
+
 }

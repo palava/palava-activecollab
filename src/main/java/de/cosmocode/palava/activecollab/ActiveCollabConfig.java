@@ -17,6 +17,8 @@
 package de.cosmocode.palava.activecollab;
 
 /**
+ * Static constant holder class for ActiveCollab config key names.
+ * 
  * @author Tobias Sarnowski
  */
 public final class ActiveCollabConfig {
@@ -30,5 +32,9 @@ public final class ActiveCollabConfig {
     public static final String VISIBILITY = PREFIX + "visibility";
     public static final String MILESTONEID = PREFIX + "milestoneId";
     public static final String PARENTID = PREFIX + "parentId";
+    
+    private ActiveCollabConfig() {
+        
+    }
 
 }
